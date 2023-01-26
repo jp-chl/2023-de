@@ -123,31 +123,24 @@ Time: 0.101s
 > In 2019-01-01 how many trips had 2 and 3 passengers?
 
 ```sql
-select count(*) from green_taxi_data
+select count(*), passenger_count
+from green_taxi_data
 where extract(year from lpep_pickup_datetime) = 2019
 and extract(month from lpep_pickup_datetime) = 1
 and extract(day from lpep_pickup_datetime) = 1
-and passenger_count = 2;
-+-------+
-| count |
-|-------|
-| 1282  |
-+-------+
-SELECT 1
-Time: 0.076s
+and passenger_count in (2,3)
+group by passenger_count;
+```
 
-select count(*) from green_taxi_data
-where extract(year from lpep_pickup_datetime) = 2019
-and extract(month from lpep_pickup_datetime) = 1
-and extract(day from lpep_pickup_datetime) = 1
-and passenger_count = 3;
-+-------+
-| count |
-|-------|
-| 254   |
-+-------+
-SELECT 1
-Time: 0.068s
+```sql
++-------+-----------------+
+| count | passenger_count |
+|-------+-----------------|
+| 1282  | 2               |
+| 254   | 3               |
++-------+-----------------+
+SELECT 2
+Time: 0.085s
 ```
 
 #### Q6
@@ -163,7 +156,9 @@ JOIN green_taxi_data as g
 on g."DOLocationID" = z."LocationID"
 where g."PULocationID" = (select "LocationID" from zones where "Zone" = 'Astoria')
 order by g.tip_amount desc limit 1;
+```
 
+```sql
 +-------------------------------+
 | Zone                          |
 |-------------------------------|

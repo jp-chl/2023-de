@@ -198,7 +198,7 @@ Deployment is available through the Web UI:
 If you click over Run, the deployment is scheduled but it does not run inmediately.
 
 <p align="center">
-  <img src="readme-images/03-run.png" width="70%">
+  <img src="readme-images/03-run.png" width="30%">
 </p>
 
 <p align="center">

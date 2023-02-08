@@ -289,7 +289,7 @@ To execute flow runs from this deployment, start an agent that pulls work from t
 $ prefect agent start -q 'default'
 ```
 
-> After running the deployment, the agent handles it:
+> Running the deployment:
 
 ```log
 15:52:22.123 | INFO    | prefect.agent - Submitting flow run 'a88c3293-d67a-4a22-b2e3-22f2c4e8c624'
@@ -375,7 +375,114 @@ How many rows were processed by the script?
 - [] 125,268
 - [] 377,922
 - [] 728,390
-- [] 514,392
+- [X] 514,392
+
+> Answer
+
+```bash
+prefect deployment build ./week02/homework02/etl_web_to_gcs.py:etl_web_to_gcs 
+--name q5_param_etl_web_to_gcs 
+-sb github/test 
+--params='{"month" : 4, "year": 2019, "color": "green"}' 
+--apply
+```
+
+```log
+Found flow 'etl-web-to-gcs'
+Deployment YAML created at '/home/jp/github/prefect-zoomcamp/flows/03_deployments/etl_web_to_gcs-deployment.yaml'.
+Deployment storage GitHub(repository='https://github.com/jp-chl/2023-de/', reference=None, access_token=None, 
+include_git_objects=True) does not have upload capabilities; no files uploaded.  Pass --skip-upload to suppress this warning.
+Deployment 'etl-web-to-gcs/q5_param_etl_web_to_gcs' successfully created with id '63cd50e3-e67b-4c7e-bfa9-a46ddc9f8bee'.
+
+To execute flow runs from this deployment, start an agent that pulls work from the 'default' work queue:
+$ prefect agent start -q 'default'
+```
+
+```log
+18:57:52.061 | INFO    | prefect.agent - Submitting flow run '22ccd97c-1662-438f-bb9d-8610681d4b00'
+18:57:52.151 | INFO    | prefect.infrastructure.process - Opening process 'powerful-pug'...
+18:57:52.186 | INFO    | prefect.agent - Completed submission of flow run '22ccd97c-1662-438f-bb9d-8610681d4b00'
+/home/jp/anaconda3/envs/prefect-dev/lib/python3.9/runpy.py:127: RuntimeWarning: 'prefect.engine' found in sys.modules after import of package 'prefect', but prior to execution of 'prefect.engine'; this may result in unpredictable behaviour
+  warn(RuntimeWarning(msg))
+18:57:55.092 | INFO    | Flow run 'powerful-pug' - Downloading flow code from storage at ''
+18:57:55.728 | INFO    | Flow run 'powerful-pug' - dataset_url: [https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2019-04.csv.gz]
+18:57:55.766 | INFO    | Flow run 'powerful-pug' - Created task run 'fetch-0' for task 'fetch'
+18:57:55.768 | INFO    | Flow run 'powerful-pug' - Executing 'fetch-0' immediately...
+18:57:57.850 | INFO    | Task run 'fetch-0' - Finished in state Completed()
+18:57:57.889 | INFO    | Flow run 'powerful-pug' - Created task run 'clean-0' for task 'clean'
+18:57:57.891 | INFO    | Flow run 'powerful-pug' - Executing 'clean-0' immediately...
+18:57:58.212 | INFO    | Task run 'clean-0' -    VendorID lpep_pickup_datetime  ... trip_type congestion_surcharge
+0         2  2019-04-01 00:18:40  ...         1                 2.75
+1         2  2019-04-01 00:18:24  ...         1                 0.00
+
+[2 rows x 20 columns]
+18:57:58.215 | INFO    | Task run 'clean-0' - columns: VendorID                          int64
+lpep_pickup_datetime     datetime64[ns]
+lpep_dropoff_datetime    datetime64[ns]
+store_and_fwd_flag               object
+RatecodeID                        int64
+PULocationID                      int64
+DOLocationID                      int64
+passenger_count                   int64
+trip_distance                   float64
+fare_amount                     float64
+extra                           float64
+mta_tax                         float64
+tip_amount                      float64
+tolls_amount                    float64
+ehail_fee                       float64
+improvement_surcharge           float64
+total_amount                    float64
+payment_type                      int64
+trip_type                         int64
+congestion_surcharge            float64
+dtype: object
+18:57:58.216 | INFO    | Task run 'clean-0' - rows: 514392
+18:57:58.253 | INFO    | Task run 'clean-0' - Finished in state Completed()
+18:57:58.293 | INFO    | Flow run 'powerful-pug' - Created task run 'write_local-0' for task 'write_local'
+18:57:58.294 | INFO    | Flow run 'powerful-pug' - Executing 'write_local-0' immediately...
+18:58:00.276 | INFO    | Task run 'write_local-0' - Finished in state Completed()
+18:58:00.317 | INFO    | Flow run 'powerful-pug' - Created task run 'write_gcs-0' for task 'write_gcs'
+18:58:00.319 | INFO    | Flow run 'powerful-pug' - Executing 'write_gcs-0' immediately...
+18:58:00.458 | INFO    | Task run 'write_gcs-0' - Getting bucket 'prefect-de-zoomcamp-jpvr-2023'.
+18:58:00.636 | INFO    | Task run 'write_gcs-0' - Uploading from PosixPath('data/green/green_tripdata_2019-04.parquet') to the bucket 'prefect-de-zoomcamp-jpvr-2023' path 'data/green/green_tripdata_2019-04.parquet'.
+18:58:01.004 | INFO    | Task run 'write_gcs-0' - Finished in state Completed()
+18:58:01.006 | INFO    | Flow run 'powerful-pug' - 
+
+Rows processed: 514392
+
+18:58:01.045 | INFO    | Flow run 'powerful-pug' - Finished in state Completed('All states completed.')
+18:58:01.685 | INFO    | prefect.infrastructure.process - Process 'powerful-pug' exited cleanly.
+```
+
+> Adding Webhook in "temp-notify.slack.com" Slack workspace
+
+<p align="center">
+  <img src="readme-images/05-a-add-integration.png" width="60%">
+</p>
+
+<p align="center">
+  <img src="readme-images/05-b-added-webhook.png" width="60%">
+</p>
+
+<p align="left">
+  <img src="readme-images/05-d-slack-add-integration.png" width="40%">
+</p>
+
+> Create notification in Prefect
+
+<p align="center">
+  <img src="readme-images/05-c-prefect-add-notification.png" width="70%">
+</p>
+
+> Run the deployment and post messages to Slack
+
+<p align="left">
+  <img src="readme-images/05-e-flow-run.png" width="70%">
+</p>
+
+
+Slack message: https://temp-notify.slack.com/archives/C04M4NAM67L/p1675883403549799
 
 ---
 
@@ -386,5 +493,25 @@ Once you’ve created your block in the UI, how many characters are shown as ast
 
 - [] 5
 - [] 6
-- [] 8
+- [X] 8
 - [] 10
+
+> Answer
+
+Create a secret block
+
+<p align="left">
+  <img src="readme-images/06-a.png" width="70%">
+</p>
+
+Add the 10 digit password
+
+<p align="left">
+  <img src="readme-images/06-b.png" width="70%">
+</p>
+
+Validate created secret block. 8 asterisk characters are shown in the UI
+
+<p align="left">
+  <img src="readme-images/06-c.png" width="70%">
+</p>

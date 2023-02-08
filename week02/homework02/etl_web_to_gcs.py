@@ -3,7 +3,11 @@ import pandas as pd
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 from random import randint
+import os
 
+def create_dir_if_doesnot_exist(directory: str) -> None:
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 @task(retries=3)
 def fetch(dataset_url: str) -> pd.DataFrame:
@@ -27,6 +31,8 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 @task()
 def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
     """Write DataFrame out locally as parquet file"""
+    create_dir_if_doesnot_exist(f"data/{color}")
+    
     path = Path(f"data/{color}/{dataset_file}.parquet")
     df.to_parquet(path, compression="gzip")
     return path

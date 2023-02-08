@@ -243,8 +243,112 @@ How many rows were processed by the script?
 
 - [] 88,019
 - [] 192,297
-- [] 88,605
+- [X] 88,605
 - [] 190,225
+
+> Answer
+
+- 1: Create a Github Block (check [deploy-from-github.py](./deploy-from-github.py))
+- 2: Create a deployment with the ```--sb``` parameter
+
+```bash
+python deploy-from-github.py
+```
+
+```log
+15:58:42.490 | INFO    | prefect.engine - Created flow run 'fresh-hog' for flow 'main-flow'
+15:58:42.662 | INFO    | Flow run 'fresh-hog' - Created task run 'load_block_from_github-0' for task 'load_block_from_github'
+15:58:42.663 | INFO    | Flow run 'fresh-hog' - Executing 'load_block_from_github-0' immediately...
+15:58:43.270 | INFO    | Task run 'load_block_from_github-0' - Finished in state Completed()
+15:58:43.307 | INFO    | Flow run 'fresh-hog' - Finished in state Completed('All states completed.')
+```
+
+In the Web UI a new block has created
+
+<p align="center">
+  <img src="readme-images/03-block-github.png" width="70%">
+</p>
+
+> Use that block in a deployment:
+
+```bash
+prefect deployment build ./week02/homework02/etl_web_to_gcs.py:etl_web_to_gcs --name test_q3_etl_web_to_gcs -sb github/test --apply
+```
+
+```log
+Found flow 'etl-web-to-gcs'
+Deployment YAML created at 
+'/home/jp/github/prefect-zoomcamp/flows/03_deployments/etl_web_to_gcs-deployment.yaml'.
+Deployment storage GitHub(repository='https://github.com/jp-chl/2023-de/', reference=None, access_token=None,
+include_git_objects=True) does not have upload capabilities; no files uploaded.  Pass --skip-upload to 
+suppress this warning.
+Deployment 'etl-web-to-gcs/test_q3_etl_web_to_gcs' successfully created with id 
+'6baf8f36-a72c-4e0b-b1e3-72d5911d4e08'.
+
+To execute flow runs from this deployment, start an agent that pulls work from the 'default' work queue:
+$ prefect agent start -q 'default'
+```
+
+> After running the deployment, the agent handles it:
+
+```log
+15:52:22.123 | INFO    | prefect.agent - Submitting flow run 'a88c3293-d67a-4a22-b2e3-22f2c4e8c624'
+15:52:22.205 | INFO    | prefect.infrastructure.process - Opening process 'vivacious-alligator'...
+15:52:22.239 | INFO    | prefect.agent - Completed submission of flow run 'a88c3293-d67a-4a22-b2e3-22f2c4e8c624'
+/home/jp/anaconda3/envs/prefect-dev/lib/python3.9/runpy.py:127: RuntimeWarning: 'prefect.engine' found in sys.modules after import of package 'prefect', but prior to execution of 'prefect.engine'; this may result in unpredictable behaviour
+  warn(RuntimeWarning(msg))
+15:52:25.037 | INFO    | Flow run 'vivacious-alligator' - Downloading flow code from storage at ''
+15:52:25.624 | INFO    | Flow run 'vivacious-alligator' - dataset_url: [https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2020-11.csv.gz]
+15:52:25.663 | INFO    | Flow run 'vivacious-alligator' - Created task run 'fetch-0' for task 'fetch'
+15:52:25.664 | INFO    | Flow run 'vivacious-alligator' - Executing 'fetch-0' immediately...
+week02/homework02/etl_web_to_gcs.py:15: DtypeWarning: Columns (3) have mixed types. Specify dtype option on import or set low_memory=False.
+  df = pd.read_csv(dataset_url)
+15:52:26.227 | INFO    | Task run 'fetch-0' - Finished in state Completed()
+15:52:26.264 | INFO    | Flow run 'vivacious-alligator' - Created task run 'clean-0' for task 'clean'
+15:52:26.265 | INFO    | Flow run 'vivacious-alligator' - Executing 'clean-0' immediately...
+15:52:26.385 | INFO    | Task run 'clean-0' -    VendorID lpep_pickup_datetime  ... trip_type congestion_surcharge
+0       2.0  2020-11-01 00:08:23  ...       1.0                 2.75
+1       2.0  2020-11-01 00:23:32  ...       1.0                 0.00
+
+[2 rows x 20 columns]
+15:52:26.387 | INFO    | Task run 'clean-0' - columns: VendorID                        float64
+lpep_pickup_datetime     datetime64[ns]
+lpep_dropoff_datetime    datetime64[ns]
+store_and_fwd_flag               object
+RatecodeID                      float64
+PULocationID                      int64
+DOLocationID                      int64
+passenger_count                 float64
+trip_distance                   float64
+fare_amount                     float64
+extra                           float64
+mta_tax                         float64
+tip_amount                      float64
+tolls_amount                    float64
+ehail_fee                       float64
+improvement_surcharge           float64
+total_amount                    float64
+payment_type                    float64
+trip_type                       float64
+congestion_surcharge            float64
+dtype: object
+15:52:26.389 | INFO    | Task run 'clean-0' - rows: 88605
+15:52:26.420 | INFO    | Task run 'clean-0' - Finished in state Completed()
+15:52:26.455 | INFO    | Flow run 'vivacious-alligator' - Created task run 'write_local-0' for task 'write_local'
+15:52:26.456 | INFO    | Flow run 'vivacious-alligator' - Executing 'write_local-0' immediately...
+15:52:26.829 | INFO    | Task run 'write_local-0' - Finished in state Completed()
+15:52:26.865 | INFO    | Flow run 'vivacious-alligator' - Created task run 'write_gcs-0' for task 'write_gcs'
+15:52:26.866 | INFO    | Flow run 'vivacious-alligator' - Executing 'write_gcs-0' immediately...
+15:52:26.999 | INFO    | Task run 'write_gcs-0' - Getting bucket 'prefect-de-zoomcamp-jpvr-2023'.
+15:52:27.141 | INFO    | Task run 'write_gcs-0' - Uploading from PosixPath('data/green/green_tripdata_2020-11.parquet') to the bucket 'prefect-de-zoomcamp-jpvr-2023' path 'data/green/green_tripdata_2020-11.parquet'.
+15:52:27.459 | INFO    | Task run 'write_gcs-0' - Finished in state Completed()
+15:52:27.460 | INFO    | Flow run 'vivacious-alligator' - 
+
+Rows processed: 88605
+
+15:52:27.499 | INFO    | Flow run 'vivacious-alligator' - Finished in state Completed('All states completed.')
+15:52:28.084 | INFO    | prefect.infrastructure.process - Process 'vivacious-alligator' exited cleanly.
+```
 
 ---
 #### Q5

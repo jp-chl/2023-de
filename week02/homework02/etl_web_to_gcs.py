@@ -17,10 +17,14 @@ def fetch(dataset_url: str) -> pd.DataFrame:
 
 
 @task(log_prints=True)
-def clean(df: pd.DataFrame) -> pd.DataFrame:
+def clean(df: pd.DataFrame, color: str = "green") -> pd.DataFrame:
     """Fix dtype issues"""
-    df["lpep_pickup_datetime"] = pd.to_datetime(df["lpep_pickup_datetime"])
-    df["lpep_dropoff_datetime"] = pd.to_datetime(df["lpep_dropoff_datetime"])
+    if color == "green":
+        df["lpep_pickup_datetime"] = pd.to_datetime(df["lpep_pickup_datetime"])
+        df["lpep_dropoff_datetime"] = pd.to_datetime(df["lpep_dropoff_datetime"])
+    elif color == "yellow":
+        df["tpep_pickup_datetime"] = pd.to_datetime(df["tpep_pickup_datetime"])
+        df["tpep_dropoff_datetime"] = pd.to_datetime(df["tpep_dropoff_datetime"])
 
     print(df.head(2))
     print(f"columns: {df.dtypes}")
@@ -37,7 +41,6 @@ def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
     df.to_parquet(path, compression="gzip")
     return path
 
-
 @task()
 def write_gcs(path: Path) -> None:
     """Upload local parquet file to GCS"""
@@ -45,25 +48,23 @@ def write_gcs(path: Path) -> None:
     gcs_block.upload_from_path(from_path=path, to_path=path)
     return
 
-
 @flow(log_prints=True)
-def etl_web_to_gcs() -> None:
+def etl_web_to_gcs(
+    months: int = 11, year: int = 2010, color: str = "green") -> None:
     """The main ETL function"""
-    color = "green"
-    year = 2020
-    month = 11
-
     dataset_file = f"{color}_tripdata_{year}-{month:02}"
     dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
     print(f"dataset_url: [{dataset_url}]")
 
     df = fetch(dataset_url)
-    df_clean = clean(df)
+    df_clean = clean(df, color=color)
     path = write_local(df_clean, color, dataset_file)
     write_gcs(path)
     
     print(f"\nRows processed: {len(df)}\n")
 
-
 if __name__ == "__main__":
-    etl_web_to_gcs()
+    color = "green"
+    year = 2020
+    month = 11
+    etl_web_to_gcs(month, year, color)

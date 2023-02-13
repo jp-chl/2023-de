@@ -44,11 +44,40 @@ What is the count for fhv vehicle records for year 2019?
 Write a query to count the distinct number of affiliated_base_number for the entire dataset on both the tables.</br> 
 What is the estimated amount of data that will be read when this query is executed on the External Table and the Table?
 
-- 25.2 MB for the External Table and 100.87MB for the BQ Table
-- 225.82 MB for the External Table and 47.60MB for the BQ Table
-- 0 MB for the External Table and 0MB for the BQ Table
-- 0 MB for the External Table and 317.94MB for the BQ Table 
+- [] 25.2 MB for the External Table and 100.87MB for the BQ Table
+- [] 225.82 MB for the External Table and 47.60MB for the BQ Table
+- [] 0 MB for the External Table and 0MB for the BQ Table
+- [X] 0 MB for the External Table and 317.94MB for the BQ Table 
 
+> Query external table
+```sql
+select count(DISTINCT(e.Affiliated_base_number))
+from dezoomcamp.external_green_tripdata e;
+```
+
+```log
+This query will process 0 B when run.
+```
+
+<p align="center">
+  <img src="readme-images/02-e.png" width="70%">
+</p>
+
+
+>  Query BQ table
+
+```sql
+select count(DISTINCT(g.Affiliated_base_number))
+from dezoomcamp.green_tripdata_non_partitoned g;
+```
+
+```log
+This script will process 317.94 MB when run.
+```
+
+<p align="center">
+  <img src="readme-images/02-bq.png" width="70%">
+</p>
 
 ## Question 3:
 How many records have both a blank (null) PUlocationID and DOlocationID in the entire dataset?

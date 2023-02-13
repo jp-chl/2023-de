@@ -261,10 +261,18 @@ order by Affiliated_base_number desc;
 ## Question 6: 
 Where is the data stored in the External Table you created?
 
-- Big Query
-- GCP Bucket
-- Container Registry
-- Big Table
+- [] Big Query
+- [X] GCP Bucket
+- [] Container Registry
+- [] Big Table
+
+> Answer
+
+When you create an external table in BigQuery that references data stored in a GCS Bucket, the data remains in the GCS bucket and is not copied or stored in BigQuery. The external table acts as a virtual table that provides metadata about the data, such as the schema and data types, but the actual data remains in the GCS bucket.
+
+When you query the external table in BigQuery, the query is executed against the data stored in the GCS bucket, and BigQuery retrieves only the necessary data to complete the query. This means that the data remains in the GCS bucket, and you can access it directly from the GCS bucket without having to query it through BigQuery.
+
+External tables are useful for scenarios where you want to keep the data in its original storage location, but still make it accessible through BigQuery for querying and analysis. This can help to reduce storage costs and improve query performance, as you only need to store the data in a single location, and BigQuery can access it efficiently.
 
 ---
 

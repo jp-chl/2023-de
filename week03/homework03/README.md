@@ -184,6 +184,10 @@ WHERE DATE(pickup_datetime) BETWEEN '2019-02-01' AND '2019-02-28'
 order by Affiliated_base_number desc;
 ```
 
+<p align="center">
+  <img src="readme-images/04-a.png" width="70%">
+</p>
+
 ```sql
 -- This query will process 26.41 MB when run.
 SELECT distinct(Affiliated_base_number)
@@ -191,6 +195,10 @@ FROM dezoomcamp.green_tripdata_q4_b -- Partitioned by pickup_datetime Cluster on
 WHERE DATE(pickup_datetime) BETWEEN '2019-02-01' AND '2019-02-28'
 order by Affiliated_base_number desc;
 ```
+
+<p align="center">
+  <img src="readme-images/04-b.png" width="70%">
+</p>
 
 > So the best strategy, to optimize the table if query always filter by pickup_datetime and order by affiliated_base_number, is to partition by pickup_datetime and cluster on affiliated_base_number.
 

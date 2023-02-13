@@ -98,3 +98,25 @@ FROM dezoomcamp.green_tripdata_q4_b -- Partitioned by pickup_datetime Cluster on
 WHERE DATE(pickup_datetime) BETWEEN '2019-02-01' AND '2019-02-28'
 order by Affiliated_base_number desc;
 
+
+/*
+Q5
+*/
+-- Creating a partition and cluster table
+CREATE OR REPLACE TABLE dezoomcamp.green_tripdata_partitoned_clustered
+PARTITION BY DATE(pickup_datetime)
+CLUSTER BY affiliated_base_number
+AS
+SELECT * FROM dezoomcamp.external_green_tripdata;
+
+-- This query will process 647.87 MB when run.
+SELECT distinct(Affiliated_base_number)
+FROM dezoomcamp.green_tripdata_non_partitoned
+WHERE DATE(pickup_datetime) BETWEEN '2019-03-01' AND '2019-03-31'
+order by Affiliated_base_number;
+
+-- This query will process 23.05 MB when run.
+SELECT distinct(Affiliated_base_number)
+FROM dezoomcamp.green_tripdata_partitoned_clustered
+WHERE DATE(pickup_datetime) BETWEEN '2019-03-01' AND '2019-03-31'
+order by Affiliated_base_number desc;

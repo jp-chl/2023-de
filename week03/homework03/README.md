@@ -207,10 +207,54 @@ order by Affiliated_base_number desc;
 ## Question 5:
 Implement the optimized solution you chose for question 4. Write a query to retrieve the distinct affiliated_base_number between pickup_datetime 2019/03/01 and 2019/03/31 (inclusive).</br> 
 Use the BQ table you created earlier in your from clause and note the estimated bytes. Now change the table in the from clause to the partitioned table you created for question 4 and note the estimated bytes processed. What are these values? Choose the answer which most closely matches.
-- 12.82 MB for non-partitioned table and 647.87 MB for the partitioned table
-- 647.87 MB for non-partitioned table and 23.06 MB for the partitioned table
-- 582.63 MB for non-partitioned table and 0 MB for the partitioned table
-- 646.25 MB for non-partitioned table and 646.25 MB for the partitioned table
+- [] 12.82 MB for non-partitioned table and 647.87 MB for the partitioned table
+- [X] 647.87 MB for non-partitioned table and 23.06 MB for the partitioned table
+- [] 582.63 MB for non-partitioned table and 0 MB for the partitioned table
+- [] 646.25 MB for non-partitioned table and 646.25 MB for the partitioned table
+
+> Answer
+
+Create the paritioned table
+
+```sql
+-- Creating a partition and cluster table
+CREATE OR REPLACE TABLE dezoomcamp.green_tripdata_partitoned_clustered
+PARTITION BY DATE(pickup_datetime)
+CLUSTER BY affiliated_base_number
+AS
+SELECT * FROM dezoomcamp.external_green_tripdata;
+```
+
+<p align="center">
+  <img src="readme-images/05-a.png" width="70%">
+</p>
+
+Estimate bytes
+
+```sql
+-- This query will process 647.87 MB when run.
+SELECT distinct(Affiliated_base_number)
+FROM dezoomcamp.green_tripdata_non_partitoned
+WHERE DATE(pickup_datetime) BETWEEN '2019-03-01' AND '2019-03-31'
+order by Affiliated_base_number;
+```
+
+<p align="center">
+  <img src="readme-images/05-b.png" width="70%">
+</p>
+
+```sql
+-- This query will process 23.05 MB when run.
+SELECT distinct(Affiliated_base_number)
+FROM dezoomcamp.green_tripdata_partitoned_clustered
+WHERE DATE(pickup_datetime) BETWEEN '2019-03-01' AND '2019-03-31'
+order by Affiliated_base_number desc;
+```
+
+<p align="center">
+  <img src="readme-images/05-c.png" width="70%">
+</p>
+
 
 ---
 

@@ -9,7 +9,7 @@ Create an external table using the fhv 2019 data. </br>
 Create a table in BQ using the fhv 2019 data (do not partition or cluster this table). </br>
 Data can be found here: https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/fhv </p>
 
-> Answer
+> Setup
 
 Upload 2019 data to a GCP bucket.
 
@@ -81,10 +81,38 @@ This script will process 317.94 MB when run.
 
 ## Question 3:
 How many records have both a blank (null) PUlocationID and DOlocationID in the entire dataset?
-- 717,748
-- 1,215,687
-- 5
-- 20,332
+- [X] 717,748
+- [] 1,215,687
+- [] 5
+- [] 20,332
+
+> Answer
+
+```sql
+select count(*)
+from dezoomcamp.green_tripdata_non_partitoned g
+where g.PUlocationID is null
+and   g.DOlocationID is null;
+```
+
+```log
+717748
+```
+
+<p align="center">
+  <img src="readme-images/03-count.png" width="70%">
+</p>
+
+or
+```sql
+SELECT SUM(CASE WHEN ((g.PUlocationID IS NULL) AND (g.DOlocationID IS NULL)) THEN 1 ELSE 0 END) AS null_count
+FROM dezoomcamp.green_tripdata_non_partitoned g;
+```
+
+<p align="center">
+  <img src="readme-images/03-count-2.png" width="70%">
+</p>
+
 
 ## Question 4:
 What is the best strategy to optimize the table if query always filter by pickup_datetime and order by affiliated_base_number?

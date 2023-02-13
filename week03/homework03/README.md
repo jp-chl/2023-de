@@ -278,8 +278,20 @@ External tables are useful for scenarios where you want to keep the data in its 
 
 ## Question 7:
 It is best practice in Big Query to always cluster your data:
-- True
-- False
+- [] True
+- [X] False
+
+> Answer
+
+Clustering in BigQuery refers to organizing the data within a table based on the values in one or more columns, which can improve query performance. Whether or not it is a best practice to always cluster data in BigQuery depends on the specific use case and requirements of your data and queries.
+
+Here are some factors to consider when deciding whether to cluster your data in BigQuery:
+- Query patterns: If you frequently run queries that filter on the same columns, clustering the data based on those columns can help improve query performance.
+- Data size: Clustering works best for large tables with billions of rows or more. For smaller tables, the performance improvement from clustering may be negligible.
+- Data distribution: Clustering is most effective when the data is distributed evenly across the values in the clustering columns. If the data is heavily skewed towards a few values, clustering may not provide a significant performance improvement.
+- Cost: Clustering in BigQuery can increase the storage cost for your data, as the clustering information is stored alongside the data.
+
+In general, if you have a large table with complex queries that filter on a few columns, and the data is evenly distributed across those columns, clustering the data can be a good idea. However, you should carefully evaluate the trade-off between the performance benefits of clustering and the added storage costs.
 
 ---
 

@@ -66,10 +66,10 @@ GCS: fhv/fhv_tripdata_2020-12.parquet
 You'll need to have completed the ["Build the first dbt models"](https://www.youtube.com/watch?v=UVI30Vxzd6c) video and have been able to run the models via the CLI. 
 You should find the views and models for querying in your DWH.
 
-- 41648442
-- 51648442
-[X] - 61648442
-- 71648442
+- [] 41648442
+- [] 51648442
+- [X] 61648442
+- [] 71648442
 
 > Answer
 
@@ -87,7 +87,7 @@ FROM `double-backup-374911.dbt_djp.fact_trips`
 WHERE DATE(pickup_datetime) BETWEEN '2019-01-01' AND '2020-12-31';
 ```
 
-```
+```bash
 61622055
 ```
 
@@ -99,12 +99,12 @@ WHERE DATE(pickup_datetime) BETWEEN '2019-01-01' AND '2020-12-31';
 
 You will need to complete "Visualising the data" videos, either using [google data studio](https://www.youtube.com/watch?v=39nLTs74A3E) or [metabase](https://www.youtube.com/watch?v=BnLkrA7a6gM). 
 
-- 89.9/10.1
-- 94/6
-- 76.3/23.7
-- 99.1/0.9
+- [] 89.9/10.1
+- [] 94/6
+- [] 76.3/23.7
+- [] 99.1/0.9
 
-
+---
 
 ### Question 3: 
 
@@ -113,11 +113,25 @@ You will need to complete "Visualising the data" videos, either using [google da
 Create a staging model for the fhv data for 2019 and do not add a deduplication step. Run it via the CLI without limits (is_test_run: false).
 Filter records with pickup time in year 2019.
 
-- 33244696
-- 43244696
-- 53244696
-- 63244696
+- [] 33244696
+- [X] 43244696
+- [] 53244696
+- [] 63244696
 
+> Answer
+
+After creating [stg_fhv_tripdata](https://github.com/jp-chl/2023-de-dbt/commit/714779d7eca9c49301c139bcc5dc3077edfb41dd), and [not considering joining with dim_zones](https://github.com/jp-chl/2023-de-dbt/commit/40348164b6992de28cc9892d2a9267482aabbb74) and run ```dbt run --var 'is_test_run: false'```,
+
+Query BG:
+
+```sql
+SELECT count(*)
+FROM `double-backup-374911.trips_data_all.fhv_tripdata`;
+```
+
+```bash
+43244696
+```
 
 ### Question 4: 
 
@@ -127,10 +141,25 @@ Create a core model for the stg_fhv_tripdata joining with dim_zones.
 Similar to what we've done in fact_trips, keep only records with known pickup and dropoff locations entries for pickup and dropoff locations. 
 Run it via the CLI without limits (is_test_run: false) and filter records with pickup time in year 2019.
 
-- 12998722
-- 22998722
-- 32998722
-- 42998722
+- [] 12998722
+- [X] 22998722
+- [] 32998722
+- [] 42998722
+
+> Answer
+
+After [joinining with dim_zones](https://github.com/jp-chl/2023-de-dbt/commit/9dec0dd6868204e21fd5f162896b968565c89e64), query BG:
+
+
+```sql
+SELECT count(*)
+FROM `double-backup-374911.dbt_djp.fact_fhv_trips`
+WHERE DATE(pickup_datetime) BETWEEN '2019-01-01' AND '2019-12-31';
+```
+
+```bash
+22998722
+```
 
 ### Question 5: 
 
@@ -140,10 +169,20 @@ Create a dashboard with some tiles that you find interesting to explore the data
 
 - March
 - April
-- January
+- [X] January
 - December
 
+```sql
+SELECT DATE_TRUNC(pickup_datetime, MONTH) AS month,
+       COUNT(*) AS count
+FROM `double-backup-374911.dbt_djp.fact_fhv_trips`
+GROUP BY month;
+```
 
+```
+2019-01-01 00:00:00 UTC: 19849151
+2019-12-01 00:00:00 UTC: 354469
+```
 
 ## Submitting the solutions
 
